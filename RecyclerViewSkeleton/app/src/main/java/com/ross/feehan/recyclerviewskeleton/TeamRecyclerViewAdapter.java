@@ -2,12 +2,14 @@ package com.ross.feehan.recyclerviewskeleton;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -20,8 +22,8 @@ import butterknife.ButterKnife;
  */
 public class TeamRecyclerViewAdapter extends RecyclerView.Adapter<TeamRecyclerViewAdapter.TeamViewHolder>{
 
-    private Context ctx;
-    private List<String> teamNames;
+    private static Context ctx;
+    private static List<String> teamNames;
     private TypedArray teamBadges;
 
     //Constructor
@@ -31,12 +33,16 @@ public class TeamRecyclerViewAdapter extends RecyclerView.Adapter<TeamRecyclerVi
         this.teamBadges = teamBadges;
     }
 
+    public static void handleClick(int positionClicked){
+        Toast.makeText(ctx, teamNames.get(positionClicked), Toast.LENGTH_SHORT).show();
+    }
+
     /*Method that creates and returns an instance of TeamViewHolder and inflates the correct layout
      */
     @Override
     public TeamViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.team_card_layout, viewGroup, false);
-        TeamViewHolder teamViewHolder = new TeamViewHolder(view);
+        TeamViewHolder teamViewHolder = new TeamViewHolder(view, ctx);
         return teamViewHolder;
     }
 
@@ -45,6 +51,7 @@ public class TeamRecyclerViewAdapter extends RecyclerView.Adapter<TeamRecyclerVi
      */
     @Override
     public void onBindViewHolder(TeamViewHolder teamViewHolder, int i) {
+
         teamViewHolder.teamNameTV.setText(teamNames.get(i));
         teamViewHolder.teamBadgeIV.setImageDrawable(teamBadges.getDrawable(i));
     }
@@ -59,14 +66,23 @@ public class TeamRecyclerViewAdapter extends RecyclerView.Adapter<TeamRecyclerVi
     /*Private class that holds the layout for the card view
      *Uses the view holder pattern
      */
-    public static class TeamViewHolder extends RecyclerView.ViewHolder{
+    public static class TeamViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        private Context ctx;
         @Bind(R.id.teamNameTV) protected TextView teamNameTV;
         @Bind(R.id.teamBadgeIV) protected ImageView teamBadgeIV;
 
-        public TeamViewHolder(View itemView) {
+        public TeamViewHolder(View itemView, Context ctx) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            this.ctx = ctx;
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            handleClick(getAdapterPosition());
         }
     }
 }
